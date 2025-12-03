@@ -29,6 +29,7 @@
 
 #include "implot.h"
 #ifndef IMGUI_DISABLE
+#include <limits>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -347,9 +348,16 @@ void Demo_FilledLinePlots() {
         ImPlot::SetupAxesLimits(0,100,0,500);
         if (show_fills) {
             ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
-            ImPlot::PlotShaded("Stock 1", xs1, ys1, 101, shade_mode == 0 ? -INFINITY : shade_mode == 1 ? INFINITY : fill_ref, flags);
-            ImPlot::PlotShaded("Stock 2", xs1, ys2, 101, shade_mode == 0 ? -INFINITY : shade_mode == 1 ? INFINITY : fill_ref, flags);
-            ImPlot::PlotShaded("Stock 3", xs1, ys3, 101, shade_mode == 0 ? -INFINITY : shade_mode == 1 ? INFINITY : fill_ref, flags);
+            const double neg_inf = -std::numeric_limits<double>::infinity();
+			const double pos_inf = std::numeric_limits<double>::infinity();
+			
+			const double ref1 = (shade_mode == 0) ? neg_inf
+			    : (shade_mode == 1) ? pos_inf
+			    : static_cast<double>(fill_ref);
+
+			ImPlot::PlotShaded("Stock 1", xs1, ys1, 101, ref1, flags);
+			ImPlot::PlotShaded("Stock 2", xs1, ys2, 101, ref1, flags);
+			ImPlot::PlotShaded("Stock 3", xs1, ys3, 101, ref1, flags);
             ImPlot::PopStyleVar();
         }
         if (show_lines) {
